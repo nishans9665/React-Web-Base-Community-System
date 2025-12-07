@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
     Card,
@@ -31,6 +32,8 @@ export default function ProfilePage() {
     const [name, setName] = useState(user?.name || "");
     const [email, setEmail] = useState(user?.email || ""); // Read-only in this mock usually
     const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || "");
+    const [address, setAddress] = useState(user?.address || "");
+    const [phone, setPhone] = useState(user?.phone || "");
 
     const handleProfileUpdate = (e: React.FormEvent) => {
         e.preventDefault();
@@ -138,6 +141,27 @@ export default function ProfilePage() {
                                                 className="bg-muted"
                                             />
                                             <p className="text-xs text-muted-foreground">Email change is currently disabled.</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="address">Address</Label>
+                                            <Textarea
+                                                id="address"
+                                                value={address}
+                                                onChange={(e) => setAddress(e.target.value)}
+                                                placeholder="Your Address"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="phone">Phone Number</Label>
+                                            <Input
+                                                id="phone"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                                placeholder="Your Phone Number"
+                                            />
                                         </div>
                                     </div>
 

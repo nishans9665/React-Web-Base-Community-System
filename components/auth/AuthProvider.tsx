@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 interface AuthContextType {
     user: User | null;
     login: (email: string) => Promise<void>;
+    signup: (name: string, email: string) => Promise<void>;
     logout: () => void;
     isLoading: boolean;
 }
@@ -64,6 +65,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push("/");
     };
 
+    const signup = async (name: string, email: string) => {
+        setIsLoading(true);
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+
+        const mockUser: User = {
+            id: `user-${Date.now()}`,
+            name,
+            email,
+            role: "user",
+            level: 1,
+            xp: 0,
+            credits: 50,
+            avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+        };
+
+        setUser(mockUser);
+        localStorage.setItem("pos_community_user", JSON.stringify(mockUser));
+        setIsLoading(false);
+        router.push("/");
+    };
+
     const logout = () => {
         setUser(null);
         localStorage.removeItem("pos_community_user");
@@ -71,7 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

@@ -6,26 +6,39 @@ import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 
-export function LoginForm() {
+export function SignUpForm() {
+    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { login, isLoading } = useAuth();
+    const { signup, isLoading } = useAuth();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await login(email);
+        await signup(name, email);
     };
 
     return (
         <div className="w-full max-w-md p-8 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl animate-in fade-in zoom-in duration-500">
             <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
-                    Welcome Back
+                    Create Account
                 </h1>
-                <p className="text-gray-400 mt-2">Login to access the community</p>
+                <p className="text-gray-400 mt-2">Join the community today</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-200">Full Name</label>
+                    <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full px-4 py-3 rounded-lg bg-black/20 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        placeholder="John Doe"
+                        required
+                    />
+                </div>
+
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-200">Email Address</label>
                     <input
@@ -33,7 +46,7 @@ export function LoginForm() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full px-4 py-3 rounded-lg bg-black/20 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
-                        placeholder="Enter your email"
+                        placeholder="john@example.com"
                         required
                     />
                 </div>
@@ -61,21 +74,18 @@ export function LoginForm() {
                     {isLoading ? (
                         <span className="flex items-center justify-center gap-2">
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Logging in...
+                            Creating Account...
                         </span>
                     ) : (
-                        "Sign In"
+                        "Sign Up"
                     )}
                 </button>
 
-                <div className="text-center text-sm text-gray-400 space-y-2">
+                <div className="text-center text-sm text-gray-400">
                     <p>
-                        Try <span className="text-blue-400 font-mono">admin@example.com</span> for admin access
-                    </p>
-                    <p>
-                        Don't have an account?{" "}
-                        <Link href="/signup" className="text-blue-400 font-medium hover:underline">
-                            Sign Up
+                        Already have an account?{" "}
+                        <Link href="/login" className="text-blue-400 font-medium hover:underline">
+                            Log In
                         </Link>
                     </p>
                 </div>
