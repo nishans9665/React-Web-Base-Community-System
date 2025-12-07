@@ -7,6 +7,8 @@ export interface User {
     xp: number;
     credits: number;
     avatarUrl?: string; // Optional for now
+    address?: string;
+    phone?: string;
 }
 
 export interface Post {
