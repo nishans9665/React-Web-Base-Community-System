@@ -53,6 +53,7 @@ const INITIAL_POSTS: Post[] = [
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("home");
   const { user } = useAuth();
 
   const handleCreatePost = (newPostData: { title: string; content: string; tags: string[] }) => {
@@ -72,32 +73,53 @@ export default function Home() {
     setPosts([newPost, ...posts]);
   };
 
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const getFilteredAndSortedPosts = () => {
+    let result = [...posts];
+
+    // Filter by search
+    if (searchQuery) {
+      result = result.filter(post =>
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // Sort/Filter by Tab
+    if (activeTab === 'popular') {
+      result.sort((a, b) => b.likes - a.likes);
+    } else if (activeTab === 'topics') {
+      // Just an example: maybe show only posts with tags?
+      // For now, we'll just focus the search bar if they click topics, or reset sort
+    }
+
+    return result;
+  };
+
+  const filteredPosts = getFilteredAndSortedPosts();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-blue-500/30">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
       <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] -z-10 opacity-50" />
 
       <Navbar />
 
       <main className="container mx-auto px-4 py-8 flex items-start gap-8">
-        <Sidebar />
+        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Main Feed */}
         <div className="flex-1 max-w-2xl mx-auto">
           <div className="flex flex-col gap-6 mb-8">
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">Latest Questions</h1>
+              <h1 className="text-2xl font-bold">
+                {activeTab === 'popular' ? 'Popular Questions' : 'Latest Questions'}
+              </h1>
               {user && <CreatePostModal onPostCreated={handleCreatePost} />}
             </div>
 
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search questions, topics, or errors..."
                 className="pl-10 bg-white/5 border-white/10 text-white placeholder-gray-500 hover:bg-white/10 focus:border-blue-500/50 transition-all rounded-xl h-11"
@@ -122,27 +144,29 @@ export default function Home() {
 
         {/* Right Sidebar - Trending/Stats */}
         <aside className="hidden xl:block w-80 sticky top-24 space-y-6">
-          <div className="bg-white/5 rounded-2xl border border-white/10 p-6">
-            <h3 className="font-bold mb-4">Trending Topics</h3>
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+            <h3 className="font-bold mb-4 text-foreground">Trending Topics</h3>
             <div className="flex flex-wrap gap-2">
               {['#hardware', '#inventory', '#api', '#billing', '#tax'].map(tag => (
-                <span key={tag} className="px-3 py-1 rounded-full bg-black/40 border border-white/10 text-xs text-gray-300 hover:border-white/30 cursor-pointer transition-colors"
-                  onClick={() => setSearchQuery(tag.replace('#', ''))}>
+                <span key={tag} className="px-3 py-1 rounded-full bg-secondary border border-border text-xs text-muted-foreground hover:border-primary/50 cursor-pointer transition-colors"
+                  onClick={() => { setSearchQuery(tag.replace('#', '')); setActiveTab('topics'); }}>
                   {tag}
                 </span>
               ))}
             </div>
           </div>
 
-          <div className="bg-white/5 rounded-2xl border border-white/10 p-6">
-            <h3 className="font-bold mb-4">Top Contributors</h3>
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+            <h3 className="font-bold mb-4 text-foreground">Top Contributors</h3>
             <div className="space-y-4">
               {[1, 2, 3].map((_, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-700" />
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
+                    {String.fromCharCode(65 + i)}
+                  </div>
                   <div className="flex-1">
-                    <h4 className="text-sm font-semibold">Alex Johnson</h4>
-                    <p className="text-xs text-gray-500">1.2k pts</p>
+                    <h4 className="text-sm font-semibold text-foreground">Alex Johnson</h4>
+                    <p className="text-xs text-muted-foreground">1.2k pts</p>
                   </div>
                   <span className="text-xs font-bold text-yellow-500">#{i + 1}</span>
                 </div>
